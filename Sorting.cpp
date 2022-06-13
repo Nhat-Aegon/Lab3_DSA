@@ -366,19 +366,17 @@ void calculate_algorithm(string algorithm, string output_parameter, clock_t begi
 
     //cout << begin << ' ' << end << endl;
     //printf("%0.3lf\n", time_spent);
+    cout << "-------------------------" << endl;
     if (output_parameter == "-time")
     {
-        cout << "-------------------------" << endl;
         printTimeSpent(time_spent);
     }
     else if (output_parameter == "-comp")
     {
-        cout << "-------------------------" << endl;
         printComparison(cnt_compare);
     }
     else
     {
-        cout << "-------------------------" << endl;
         printTimeSpent(time_spent);
         printComparison(cnt_compare);
     }
@@ -392,12 +390,15 @@ void command_1(string action,string algorithm, string input_file,string output_p
         fin >> a[i];
     fin.close();
 
-    int cnt;
     clock_t begin = clock();
-    if (action == "-a")
-    {
-        calculate_algorithm(algorithm, output_parameter, begin);
-    }
+
+    cout << "ALGORITHM MODE" << endl;
+    cout << "Algorithm: " << algorithm << endl;
+    cout << "Input file: " << input_file << endl;
+    cout << "Input size: " << n << endl;
+
+    calculate_algorithm(algorithm, output_parameter, begin);
+    
     ofstream fout;
     fout.open("output.txt");
     for (int i = 0; i < n; i++)
@@ -417,10 +418,13 @@ void command_2(string algorithm, int input_size, string input_order, string outp
         GenerateData(a, n, 1);
     if (input_order == "-rev")
         GenerateData(a, n, 2);
- /*   for (int i = 0; i < n; i++)
-        cout << a[i] << ' ';
-    cout << endl;*/
+    
+    cout << endl<<"ALGORITHM MODE" << endl;
+    cout << "Algorithm: " << algorithm << endl;
+    cout << "Input size: " << n << endl;
+    cout << "Input order: " << input_order << endl;
     calculate_algorithm(algorithm, output_parameter,begin);
+
     ofstream fout;
     fout.open("output.txt");
     for (int i = 0; i < n; i++)
