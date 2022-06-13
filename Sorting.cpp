@@ -1,0 +1,483 @@
+#include <iostream>
+#include<string>
+#include<fstream>
+#include <time.h>
+#include<stdlib.h>
+#include<math.h>
+
+using namespace std;
+int a[500001] = { 0 };
+int n = 0;
+int cnt_compare = 0;
+int cnt_assign = 0;
+clock_t begin;
+//stable sorting: bubble sort, insertion sort, merge sort
+bool isNum(string s)
+{
+    for (int i = 0; i < s.length(); i++)
+    {
+        if (s[i] < '0' || s[i] > '9')
+            return false;
+    }
+    return true;
+}
+
+template <class T>
+void HoanVi(T& a, T& b)
+{
+    T x = a;
+    a = b;
+    b = x;
+}
+
+void GenerateRandomData(int a[], int n)
+{
+    srand((unsigned int)time(NULL));
+    for (int i = 0; i < n; i++)
+    {
+        a[i] = rand() % n;
+    }
+}
+
+void GenerateSortedData(int a[], int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        a[i] = i;
+    }
+}
+
+void GenerateReverseData(int a[], int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        a[i] = n - 1 - i;
+    }
+}
+
+void GenerateNearlySortedData(int a[], int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        a[i] = i;
+    }
+    srand((unsigned int)time(NULL));
+    for (int i = 0; i < 10; i++)
+    {
+        int r1 = rand() % n;
+        int r2 = rand() % n;
+        while (r1 == r2)
+        {
+            int r1 = rand() % n;
+            int r2 = rand() % n;
+        }
+        HoanVi(a[r1], a[r2]);
+    }
+}
+
+void GenerateData(int a[], int n, int dataType)
+{
+    switch (dataType)
+    {
+    case 0:	// ngau nhien
+        GenerateRandomData(a, n);
+        break;
+    case 1:	// co thu tu
+        GenerateSortedData(a, n);
+        break;
+    case 2:	// co thu tu nguoc
+        GenerateReverseData(a, n);
+        break;
+    case 3:	// gan nhu sort
+        GenerateNearlySortedData(a, n);
+        break;
+    default:
+        printf("Error: unknown data type!\n");
+    }
+}
+
+void recursive_insertion_sort(int a[], int n)
+{
+    if (n <= 1)
+        return;
+    recursive_insertion_sort(a, n - 1);
+    int key = a[n - 1];
+    int j = n - 2;
+    while (j >= 0 && a[j] > key)
+    {
+        a[j + 1] = a[j];
+        j--;
+    }
+    a[j + 1] = key;
+}
+
+int partition(int a[], int low, int high )
+{
+    int p = a[(low + high) / 2];
+    int i = low;
+    int j = high;
+    while (i <= j)
+    {
+        while (a[i] > p) i++;
+        while (a[j] < p) j--;
+        if (i <= j)
+        {
+            swap(a[i], a[j]);
+            i++;
+            j--;
+        }
+    }
+    return i;
+}
+//void quickSort(int a[], int low, int high)
+//{
+//    if (low < high)
+//    {
+//        int p = partition(a, low, high);
+//        quickSort(a, low, p - 1);
+//        quickSort(a, p, high);
+//    }
+//}
+void quickSort(int a[], int low, int high)
+{
+    int i = low;
+    int j = high;
+    //cout << low << ' ' << high << ' '<<endl;
+    if (low >= high)
+    {
+        //cout << -1 <<endl;
+        return;
+    }
+ 
+    int p = a[(low + high) / 2];
+    while (i <= j)
+    {
+            while (a[i] > p) i++;
+        while (a[j] < p) j--;
+        if (i <= j)
+        {
+            swap(a[i], a[j]);
+            i++;
+            j--;
+        }
+    }
+  /*  cout << p << endl;
+    for (int i = 0; i < n; i++)
+        cout << a[i] << ' ';
+    cout << endl;*/
+    quickSort(a, low, i-1);
+    quickSort(a, i+1, high);
+}
+void quickSort(int a[], int n)
+{
+    quickSort(a, 0, n - 1);
+}
+void merge(int a[], int left, int mid, int right)
+{
+    int* b = new int[right - left + 1]; // m?ng t?m l?u m?ng con sau khi x?p
+    int c1 = 0, c2 = 0;
+    int d = 0;
+
+    for (d = 0, c1 = left, c2 = mid + 1; (c1 <= mid) && (c2 <= right); d++) // x�t c�c ph?n t? t? left->mid v� mid+1->right
+    {
+        if (a[c1] > a[c2])
+        {
+            b[d] = a[c1];
+            c1++;
+        }
+        else
+        {
+            b[d] = a[c2];
+            c2++;
+        }
+    }
+   
+    while(c1 <= mid) // n?u m?ng t? left -> mid c�n ph?n t? ta g�n l?n l??t v�o m?ng kqua.
+    {
+        b[d++] = a[c1++];
+    }
+
+    while (c2 <= right) // n?u m?ng t? mid+1 -> right c�n ph?n t? ta g�n l?n l??t v�o m?ng kqua
+    {
+        b[d++] = a[c2++];
+    }
+
+    for (int i = 0; i < d; i++) //g�n l?i c�c ph?n t? c?a m?ng k?t qu? v�o m?ng ban ??u
+    {
+        a[i + left] = b[i];
+    }
+} 
+void mergeSort(int a[], int n)
+{
+    // � t??ng: l?y size l� ?? d�i c?a m?ng con, size c?a m?ng con <= n/2
+    // ch?y 1 v�ng for l?y left l� ph?n t? b?t ??u c?a m?ng con ?ang x�t
+    // sau khi x�t xong left + 2*size ?? l?y ph?n t? tr�i c?a m?ng con ti?p theo 
+    for (int size = 1; size <= n - 1; size *= 2) // 
+    {
+        for (int left = 0; left < n ; left += 2 * size)
+        {
+            int right = min(left + 2 * size - 1, n - 1); // right l� ch? s? c?a ph?n t? k?t th�c m?ng con, n�n right = left + 2*size -1
+                                                          // ta l?y right = min(left + 2*size - 1,n-1) ?? tr�nh tr??ng h?p right v??t qu� ch? s? c?a m?ng l� n-1 
+            int mid = min(left + size -1, n-1); // Mid l� ph?n t? gi?a c?a m?ng con, mid = left + size - 1
+                                                // t??ng t? ?? ph�ng tr??ng h?p mid b? v??t qu� ch? s? c?a m?ng l� n-1, ta l?y Mid = min(left+size-1,n-1)
+            merge(a, left, mid, right); // ch?y h�m merge cho m?ng con
+        }
+    }
+}
+void Heapify(int a[], int n, int i)
+{
+    int largest = i;
+    int left = i * 2 + 1;
+    int right = i * 2 + 2;
+    if (++cnt_compare && left < n && ++cnt_compare && a[i] < a[left])
+    {
+        largest = left;
+    }
+    if (++cnt_compare && right < n && ++cnt_compare && a[right] > a[largest])
+    {
+        largest = right;
+    }
+    if (++cnt_compare && largest != i)
+    {
+        swap(a[i], a[largest]);
+        Heapify(a, n,largest);
+    }
+}
+void buildMinHeap(int a[],int n)
+{
+    for (int i = (n/2)-1;++cnt_compare, i >= 0; i--)
+    {
+        Heapify(a, n, i);
+    }
+}
+void HeapSort(int a[], int n)
+{
+    buildMinHeap(a, n);
+    //for (int i = 0; i < n; i++)
+    //{
+    //    cout << a[i] << ' ';
+    //}
+    //cout <<endl<< 1<<endl;
+    for (int i = n - 1; ++cnt_compare, i > 0; i--)
+    {
+        swap(a[0], a[i]);
+        Heapify(a, i, 0);
+    }   
+}
+void radixSort(int a[], int n)
+{
+    int maxx = a[0];
+    int exp = 1;
+    int* b = new int[n];
+    int check[10] = { 0 };
+    for (int i = 0; i < n; i++)
+    {
+        maxx = max(maxx, a[i]);
+    }
+    while (maxx / exp > 0)
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            check[i] = 0;
+        }
+        for (int i = 0; i < n; i++)
+        {
+            check[a[i] / exp % 10]++;
+        }
+        /*for (int i = 0; i < 10; i++)
+            cout << check[i] << ' ';
+        cout << endl;*/
+        for (int i = 9; i >=0; i--)
+        {
+            if (i != 9)
+            {
+                check[i] += check[i + 1];
+            }
+        }
+        /*for (int i = 0; i < 10; i++)
+            cout << check[i] << ' ';
+        cout << endl;
+        cout << endl;*/
+        for (int i = n-1; i >= 0; i--)
+        {
+            //cout << check[a[i] / exp % 10] - 1 << ' ' << a[i] << endl; // do sau vong while dau, khi xet 2 so co cung gia tri dang xet
+                                                                        // phan tu lon hon se nam o dau, do do ta can phai chay nguoc ve de dam bao thu tu
+            b[--check[a[i] / exp % 10]] = a[i];
+        }
+        //cout << endl;
+        for (int i = 0; i < n; i++)
+        {
+            a[i] = b[i];
+        }
+        exp *= 10;
+    }
+}
+void shakerSort(int a[], int n)
+{
+    int left = 0;
+    int right = n - 1;
+    int k = 0;
+    while (++cnt_compare && left < right)
+    {
+        for (int i = left; cnt_compare++,i < right; i++)
+        {
+            if (++cnt_compare && a[i] > a[i + 1])
+            {
+                k = i;
+                swap(a[i], a[i + 1]);
+            }
+        }
+        right = k;
+        for (int i = right; cnt_compare++, i > left; i--)
+        {
+            if (++cnt_compare && a[i] < a[i - 1])
+            {
+                k = i;
+                swap(a[i], a[i - 1]);
+            }
+        }
+        left = k;
+    }
+}
+void printTimeSpent(double time_spent)
+{
+    cout << "Running time: " << time_spent << " s" << endl;
+}
+void printComparison(int compare)
+{
+    cout << "Comparisons: " << compare<< endl;
+}
+
+void (*function_algorithm[6])(int*, int) = { &quickSort, &mergeSort,&radixSort,&HeapSort, &shakerSort};
+string algorithm_name[5] = { "quick-sort", "merge-sort", "radix-sort", "heap-sort", "shaker-sort" };
+
+void calculate_algorithm(string algorithm, string output_parameter, clock_t begin)
+{
+    for (int i = 0; i < 5; i++)
+    {
+        if (algorithm_name[i] == algorithm)
+        {
+            function_algorithm[i](a, n);
+        }
+    }
+
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+    //cout << begin << ' ' << end << endl;
+    //printf("%0.3lf\n", time_spent);
+    if (output_parameter == "-time")
+    {
+        cout << "-------------------------" << endl;
+        printTimeSpent(time_spent);
+    }
+    else if (output_parameter == "-comp")
+    {
+        cout << "-------------------------" << endl;
+        printComparison(cnt_compare);
+    }
+    else
+    {
+        cout << "-------------------------" << endl;
+        printTimeSpent(time_spent);
+        printComparison(cnt_compare);
+    }
+}
+void command_1(string action,string algorithm, string input_file,string output_parameter)
+{
+    ifstream fin;
+    fin.open(input_file);
+    fin >> n;
+    for (int i = 0; i < n; i++)
+        fin >> a[i];
+    fin.close();
+
+    int cnt;
+    clock_t begin = clock();
+    if (action == "-a")
+    {
+        calculate_algorithm(algorithm, output_parameter, begin);
+    }
+    ofstream fout;
+    fout.open("output.txt");
+    for (int i = 0; i < n; i++)
+        fout << a[i] << ' ';
+    fout.close();
+}
+void command_2(string algorithm, int input_size, string input_order, string output_parameter)
+{
+    //cout << algorithm << ' ' << input_size << ' ' << input_order << ' ' << output_parameter << endl;
+    n = input_size;
+    clock_t begin = clock();
+    if(input_order == "-rand")
+        GenerateData(a, n, 0);
+    if (input_order == "-nsorted")
+        GenerateData(a, n, 3);
+    if (input_order == "-sorted")
+        GenerateData(a, n, 1);
+    if (input_order == "-rev")
+        GenerateData(a, n, 2);
+ /*   for (int i = 0; i < n; i++)
+        cout << a[i] << ' ';
+    cout << endl;*/
+    calculate_algorithm(algorithm, output_parameter,begin);
+    ofstream fout;
+    fout.open("output.txt");
+    for (int i = 0; i < n; i++)
+        fout << a[i] << ' ';
+    fout.close();
+}
+int main(int argc, char* argv[])
+{
+    string input_file,action, algorithm, output_parameter,input_order;
+    int input_size = 0;
+    if (argc >= 5)
+    {
+        if (argc == 5)
+        {
+            if (!isNum(argv[3]))
+            {
+                action = argv[1];
+                algorithm = argv[2];
+                input_file = argv[3];
+                output_parameter = argv[4];
+                command_1(action, algorithm, input_file, output_parameter);
+                return 0;
+            }
+            else
+            {
+                action = argv[1];
+                algorithm = argv[2];
+                input_size = stoi(argv[3]);
+                output_parameter = argv[4];
+                return 0;
+            }
+        }
+        else
+        {
+            action = argv[1];
+            algorithm = argv[2];
+            input_size = stoi(argv[3]);
+            input_order = argv[4];
+            output_parameter = argv[5];
+            command_2(algorithm, input_size, input_order, output_parameter);
+            return 0;
+        }
+    }
+    else
+    {
+        cout << "Input action: ";
+        cin >> action;
+        cout << "Input algorithm: ";
+        cin >> algorithm;
+        cout << "Input input size: ";
+        cin >> input_size;
+        cout << "Input input order: ";
+        cin >> input_order;
+        cout << "Input output parameter: ";
+        cin >> output_parameter;
+    }
+    command_2(algorithm, input_size, input_order, output_parameter);
+    if (!system(NULL)) system("pause"); return 0;
+    return 0;
+}
