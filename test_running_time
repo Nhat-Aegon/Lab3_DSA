@@ -8,7 +8,7 @@
 using namespace std;
 int a[500001] = { 0 };
 int n = 0;
-unsigned long long cnt_compare = 0;
+unsigned long long int cnt_compare = 0;
 int cnt_assign = 0;
 clock_t begin;
 //stable sorting: bubble sort, insertion sort, merge sort
@@ -178,7 +178,7 @@ void merge(int a[], int left, int mid, int right)
     int c1 = 0, c2 = 0;
     int d = 0;
 
-    for (d = 0, c1 = left, c2 = mid + 1; (c1 <= mid) && (c2 <= right); d++) // x�t c�c ph?n t? t? left->mid v� mid+1->right
+    for (d = 0, c1 = left, c2 = mid + 1; (c1 <= mid) && (c2 <= right); d++) // xét các ph?n t? t? left->mid và mid+1->right
     {
         if (a[c1] > a[c2])
         {
@@ -192,35 +192,35 @@ void merge(int a[], int left, int mid, int right)
         }
     }
    
-    while(c1 <= mid) // n?u m?ng t? left -> mid c�n ph?n t? ta g�n l?n l??t v�o m?ng kqua.
+    while(c1 <= mid) // n?u m?ng t? left -> mid còn ph?n t? ta gán l?n l??t vào m?ng kqua.
     {
         b[d++] = a[c1++];
     }
 
-    while (c2 <= right) // n?u m?ng t? mid+1 -> right c�n ph?n t? ta g�n l?n l??t v�o m?ng kqua
+    while (c2 <= right) // n?u m?ng t? mid+1 -> right còn ph?n t? ta gán l?n l??t vào m?ng kqua
     {
         b[d++] = a[c2++];
     }
 
-    for (int i = 0; i < d; i++) //g�n l?i c�c ph?n t? c?a m?ng k?t qu? v�o m?ng ban ??u
+    for (int i = 0; i < d; i++) //gán l?i các ph?n t? c?a m?ng k?t qu? vào m?ng ban ??u
     {
         a[i + left] = b[i];
     }
 } 
 void mergeSort(int a[], int n)
 {
-    // � t??ng: l?y size l� ?? d�i c?a m?ng con, size c?a m?ng con <= n/2
-    // ch?y 1 v�ng for l?y left l� ph?n t? b?t ??u c?a m?ng con ?ang x�t
-    // sau khi x�t xong left + 2*size ?? l?y ph?n t? tr�i c?a m?ng con ti?p theo 
+    // ý t??ng: l?y size là ?? dài c?a m?ng con, size c?a m?ng con <= n/2
+    // ch?y 1 vòng for l?y left là ph?n t? b?t ??u c?a m?ng con ?ang xét
+    // sau khi xét xong left + 2*size ?? l?y ph?n t? trái c?a m?ng con ti?p theo 
     for (int size = 1; size <= n - 1; size *= 2) // 
     {
         for (int left = 0; left < n ; left += 2 * size)
         {
-            int right = min(left + 2 * size - 1, n - 1); // right l� ch? s? c?a ph?n t? k?t th�c m?ng con, n�n right = left + 2*size -1
-                                                          // ta l?y right = min(left + 2*size - 1,n-1) ?? tr�nh tr??ng h?p right v??t qu� ch? s? c?a m?ng l� n-1 
-            int mid = min(left + size -1, n-1); // Mid l� ph?n t? gi?a c?a m?ng con, mid = left + size - 1
-                                                // t??ng t? ?? ph�ng tr??ng h?p mid b? v??t qu� ch? s? c?a m?ng l� n-1, ta l?y Mid = min(left+size-1,n-1)
-            merge(a, left, mid, right); // ch?y h�m merge cho m?ng con
+            int right = min(left + 2 * size - 1, n - 1); // right là ch? s? c?a ph?n t? k?t thúc m?ng con, nên right = left + 2*size -1
+                                                          // ta l?y right = min(left + 2*size - 1,n-1) ?? tránh tr??ng h?p right v??t quá ch? s? c?a m?ng là n-1 
+            int mid = min(left + size -1, n-1); // Mid là ph?n t? gi?a c?a m?ng con, mid = left + size - 1
+                                                // t??ng t? ?? phòng tr??ng h?p mid b? v??t quá ch? s? c?a m?ng là n-1, ta l?y Mid = min(left+size-1,n-1)
+            merge(a, left, mid, right); // ch?y hàm merge cho m?ng con
         }
     }
 }
@@ -344,14 +344,13 @@ void printTimeSpent(double time_spent)
     //cout << "Running time: " << time_spent << " s" << endl;
     printf("Running time: %0.6lf s\n", time_spent);
 }
-void printComparison(int compare)
+void printComparison(unsigned long long int compare)
 {
     cout << "Comparisons: " << compare<< endl;
 }
 
-void (*function_algorithm[6])(int*, int) = { &quickSort, &mergeSort,&radixSort,&HeapSort, &shakerSort};
+void (*function_algorithm[5])(int*, int) = { &quickSort, &mergeSort,&radixSort,&HeapSort, &shakerSort,};
 string algorithm_name[5] = { "quick-sort", "merge-sort", "radix-sort", "heap-sort", "shaker-sort" };
-
 void calculate_algorithm(string algorithm, string output_parameter, clock_t begin)
 {
     for (int i = 0; i < 5; i++)
@@ -382,6 +381,7 @@ void calculate_algorithm(string algorithm, string output_parameter, clock_t begi
         printComparison(cnt_compare);
     }
 }
+
 void command_1(string action,string algorithm, string input_file,string output_parameter)
 {
     ifstream fin;
