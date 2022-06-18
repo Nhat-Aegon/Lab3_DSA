@@ -32,6 +32,7 @@ void write_input(int a[], int size, int datatype)
     if (datatype == 3)f = fopen("input_3.txt", "w");
     if (datatype == 4)f = fopen("input_4.txt", "w");
 
+    fprintf(f, "%d\n", size);
     for (int i = 0; i <= size; i++)
     {
         fprintf(f, "%i", a[i]);
@@ -186,22 +187,23 @@ void shakerSort(int a[], int n)
 
 void bubbleSort(int a[], int n)
 {
-    for (int i = n - 1; i >= 0; i--)
+    for (int i = n - 1; ++cnt_compare, i >= 0; i--)
     {
         bool swapped = false;
         //day max ve cuoi mang
-        for (int j = 0; j < i; j++)
+        for (int j = 0; ++cnt_compare, j < i; j++)
             if (++cnt_compare && a[j] > a[j + 1])
             {
                 swapped = true;
                 HoanVi(a[j], a[j + 1]);
             }
-        if (!swapped)
+        if (++cnt_compare && !swapped)
         {
             return;
         }
     }
 }
+
 int partition(int a[], int first, int last)
 {
     int pivot = a[(first + last) / 2];
@@ -475,16 +477,16 @@ void flashSort(int a[], int n) // tham khảo từ github
     int k = m - 1;
     int t = 0;
     int flash;
-    while (nmove < n - 1)
+    while (++cnt_compare && nmove < n - 1)
     {
-        while (j > l[k] - 1)
+        while (++cnt_compare && j > l[k] - 1)
         {
             j++;
             k = int(c1 * (a[j] - minVal));
         }
         flash = a[j];
-        if (k < 0) break;
-        while (j != l[k])
+        if (++cnt_compare && k < 0) break;
+        while (++cnt_compare && j != l[k])
         {
             k = int(c1 * (flash - minVal));
             int hold = a[t = --l[k]];
@@ -972,6 +974,76 @@ void command_3(string mode, string algorithm, string input_size, string output_p
         if (output_parameter == "-time" || output_parameter == "-both") printTimeSpent(start, end);
         if (output_parameter == "-comp" || output_parameter == "-both") printComparison(cnt_compare);
     }
+    else if (algorithm == "flash-sort")
+    {
+    GenerateRandomData(a, size);
+    cout_random();
+    write_input(a, size, 1);
+    start = clock();
+    flashSort(a, size);
+    end = clock();
+    if (output_parameter == "-time" || output_parameter == "-both") printTimeSpent(start, end);
+    if (output_parameter == "-comp" || output_parameter == "-both") printComparison(cnt_compare);
+    GenerateNearlySortedData(a, size);
+    cout_nearlysorted();
+    write_input(a, size, 2);
+    start = clock();
+    flashSort(a, size);
+    end = clock();
+    if (output_parameter == "-time" || output_parameter == "-both") printTimeSpent(start, end);
+    if (output_parameter == "-comp" || output_parameter == "-both") printComparison(cnt_compare);
+    GenerateSortedData(a, size);
+    cout_sorted();
+    write_input(a, size, 3);
+    start = clock();
+    flashSort(a, size);
+    end = clock();
+    if (output_parameter == "-time" || output_parameter == "-both") printTimeSpent(start, end);
+    if (output_parameter == "-comp" || output_parameter == "-both") printComparison(cnt_compare);
+    GenerateReverseData(a, size);
+    cout_reversed();
+    write_input(a, size, 4);
+    start = clock();
+    flashSort(a, size);
+    end = clock();
+    if (output_parameter == "-time" || output_parameter == "-both") printTimeSpent(start, end);
+    if (output_parameter == "-comp" || output_parameter == "-both") printComparison(cnt_compare);
+    }
+    else if (algorithm == "counting-sort")
+    {
+    GenerateRandomData(a, size);
+    cout_random();
+    write_input(a, size, 1);
+    start = clock();
+    countingSort(a, size);
+    end = clock();
+    if (output_parameter == "-time" || output_parameter == "-both") printTimeSpent(start, end);
+    if (output_parameter == "-comp" || output_parameter == "-both") printComparison(cnt_compare);
+    GenerateNearlySortedData(a, size);
+    cout_nearlysorted();
+    write_input(a, size, 2);
+    start = clock();
+    countingSort(a, size);
+    end = clock();
+    if (output_parameter == "-time" || output_parameter == "-both") printTimeSpent(start, end);
+    if (output_parameter == "-comp" || output_parameter == "-both") printComparison(cnt_compare);
+    GenerateSortedData(a, size);
+    cout_sorted();
+    write_input(a, size, 3);
+    start = clock();
+    countingSort(a, size);
+    end = clock();
+    if (output_parameter == "-time" || output_parameter == "-both") printTimeSpent(start, end);
+    if (output_parameter == "-comp" || output_parameter == "-both") printComparison(cnt_compare);
+    GenerateReverseData(a, size);
+    cout_reversed();
+    write_input(a, size, 4);
+    start = clock();
+    countingSort(a, size);
+    end = clock();
+    if (output_parameter == "-time" || output_parameter == "-both") printTimeSpent(start, end);
+    if (output_parameter == "-comp" || output_parameter == "-both") printComparison(cnt_compare);
+    }
 }
 void command_4(string action, string algorithm1, string algorithm2, string input_file)
 {
@@ -1055,67 +1127,76 @@ int main(int argc, char* argv[])
 {
     string input_file, action, algorithm, output_parameter, input_order;
     int input_size = 0;
-    
-   if (argv[1][1] == 'a')
-   {
-        if (argc == 6)
+    if (argc >= 5)
+    {
+        if (argv[1][1] == 'a')
         {
-            action = argv[1];
-            algorithm = argv[2];
-            input_size = stoi(argv[3]);
-            input_order = argv[4];
-            output_parameter = argv[5];
-            //cout << "cmd2" << endl;
-            command_2(algorithm, input_size, input_order, output_parameter);
-            return 0;
-        }
-        else
-        {
-            if (isNum(argv[3]))
+            if (argc == 6)
             {
                 action = argv[1];
                 algorithm = argv[2];
-                string input_size = argv[3];
-                output_parameter = argv[4];
-                //cout << "cmd3" << endl;
-                command_3(action, algorithm, input_size, output_parameter);
+                input_size = stoi(argv[3]);
+                input_order = argv[4];
+                output_parameter = argv[5];
+                //cout << "cmd2" << endl;
+                command_2(algorithm, input_size, input_order, output_parameter);
+                return 0;
+            }
+            else
+            {
+                if (isNum(argv[3]))
+                {
+                    action = argv[1];
+                    algorithm = argv[2];
+                    string input_size = argv[3];
+                    output_parameter = argv[4];
+                    //cout << "cmd3" << endl;
+                    command_3(action, algorithm, input_size, output_parameter);
+                    return 0;
+                }
+                else
+                {
+                    action = argv[1];
+                    algorithm = argv[2];
+                    input_file = argv[3];
+                    output_parameter = argv[4];
+                    //cout << "cmd1" << endl;
+                    command_1(action, algorithm, input_file, output_parameter);
+                    return 0;
+                }
+            }
+        }
+        else if (argv[1][1] == 'c')
+        {
+            if (argc == 5)
+            {
+                action = argv[1];
+                string algorithm1 = argv[2];
+                string algorithm2 = argv[3];
+                input_file = argv[4];
+                //cout << "cmd4" << endl;
+                command_4(action, algorithm1, algorithm2, input_file);
                 return 0;
             }
             else
             {
                 action = argv[1];
-                algorithm = argv[2];
-                input_file = argv[3];
-                output_parameter = argv[4];
-                //cout << "cmd1" << endl;
-                command_1(action, algorithm, input_file, output_parameter);
+                string algorithm1 = argv[2];
+                string algorithm2 = argv[3];
+                input_size = stoi(argv[4]);
+                input_order = argv[5];
+                //cout << "cmd5" << endl;
+                command_5(algorithm1, algorithm2, input_size, input_order);
                 return 0;
             }
         }
     }
     else
     {
-        if (argc == 5)
-        {
-            action = argv[1];
-            string algorithm1 = argv[2];
-            string algorithm2 = argv[3];
-            input_file = argv[4];
-            //cout << "cmd4" << endl;
-            command_4(action, algorithm1, algorithm2, input_file);
-            return 0;
-        }
-        else
-        {
-            action = argv[1];
-            string algorithm1 = argv[2];
-            string algorithm2 = argv[3];
-            input_size = stoi(argv[4]);
-            input_order = argv[5];
-            //cout << "cmd5" << endl;
-            command_5(algorithm1, algorithm2, input_size, input_order);
-            return 0;
-        }
+       cout << "Input action: ";
+       cin >> action;
+       cout << "Input algorithm: ";
+       cin >> algorithm;
     }
     if (!system(NULL)) system("pause"); return 0;
     return 0;
