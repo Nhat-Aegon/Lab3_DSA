@@ -3,9 +3,6 @@
 #include<string>
 #include<fstream>
 #include <time.h>
-#include<stdlib.h>
-#include<math.h>
-#include <cstring>
 
 using namespace std;
 
@@ -373,7 +370,7 @@ void radixSort(int arr[], int n)
 }
 
 
-void selectionSort(int a[], int n)// tham khảo từ github
+void selectionSort(int a[], int n)
 {
 
     for (int i = 0; ++cnt_compare, i < n - 1; i++)
@@ -392,13 +389,13 @@ void selectionSort(int a[], int n)// tham khảo từ github
     }
 }
 
-void merge(int a[], int left, int mid, int right)// tham khảo từ geeksforgeeks
+void merge(int a[], int left, int mid, int right)
 {
-    int* b = new int[right - left + 1]; // m?ng t?m l?u m?ng con sau khi x?p
+    int* b = new int[right - left + 1]; 
     int c1 = 0, c2 = 0;
     int d = 0;
 
-    for (d = 0, c1 = left, c2 = mid + 1; (c1 <= mid) && (c2 <= right); d++) // x�t c�c ph?n t? t? left->mid v� mid+1->right
+    for (d = 0, c1 = left, c2 = mid + 1; (c1 <= mid) && (c2 <= right); d++) 
     {
         if (a[c1] > a[c2])
         {
@@ -412,17 +409,17 @@ void merge(int a[], int left, int mid, int right)// tham khảo từ geeksforgee
         }
     }
 
-    while (c1 <= mid) // n?u m?ng t? left -> mid c�n ph?n t? ta g�n l?n l??t v�o m?ng kqua.
+    while (c1 <= mid) 
     {
         b[d++] = a[c1++];
     }
 
-    while (c2 <= right) // n?u m?ng t? mid+1 -> right c�n ph?n t? ta g�n l?n l??t v�o m?ng kqua
+    while (c2 <= right) 
     {
         b[d++] = a[c2++];
     }
 
-    for (int i = 0; i < d; i++) //g�n l?i c�c ph?n t? c?a m?ng k?t qu? v�o m?ng ban ??u
+    for (int i = 0; i < d; i++) 
     {
         a[i + left] = b[i];
     }
@@ -446,7 +443,7 @@ void mergeSort(int a[], int n)
     mergeSort(a, 0, n - 1);
 }
 
-void flashSort(int a[], int n) // tham khảo từ github
+void flashSort(int a[], int n) 
 {
     int minVal = a[0];
     int max = 0;
